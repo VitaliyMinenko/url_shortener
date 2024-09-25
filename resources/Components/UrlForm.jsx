@@ -1,91 +1,67 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import 'bootstrap/dist/css/bootstrap.min.css';
 
 const UrlForm = () => {
-    const [url, setUrl] = useState('');
+    const [slug, setSlug] = useState('');
     const [response, setResponse] = useState(null);
+    const [message, setMessage] = useState('');
+    const [errors, setErrors] = useState({});
+
+    const handleInputChange = (e) => {
+        const value = e.target.value.replace(/\s+/g, '');
+        setSlug(value);
+    };
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
+        setMessage('');
+
         try {
-            const result = await axios.post('api/v1/shorten', { url });
+            const result = await axios.post('api/v1/shorten', { url: slug });
             setResponse(result.data);
+            setMessage('Created successfully! New slug is: ' + result.data.url);
+            setSlug('');
+            setErrors({});
         } catch (error) {
             console.error("Error submitting URL:", error);
+            setMessage('Failed to create short URL.');
         }
     };
 
     return (
-        <div style={styles.container}>
-            <form onSubmit={handleSubmit} style={styles.form}>
-                <h2 style={styles.heading}>Submit URL</h2>
-                <div>
-                    <label htmlFor="url" style={styles.label}>Enter URL:</label>
+        <div className="container d-flex justify-content-center align-items-center vh-100">
+            <form onSubmit={handleSubmit} className="bg-white p-4 rounded shadow" style={{ maxWidth: '400px', width: '100%' }}>
+                <h2 className="text-center mb-4">Submit URL Slug</h2>
+                <div className="mb-3">
+                    <label htmlFor="slug" className="form-label">Enter URL Slug:</label>
                     <input
                         type="text"
-                        id="url"
-                        name="url"
-                        value={url}
-                        onChange={(e) => setUrl(e.target.value)}
+                        id="slug"
+                        name="slug"
+                        value={slug}
+                        onChange={handleInputChange}
                         required
-                        style={styles.input}
+                        pattern="^[=_?&a-zA-Z0-9/-]+$"
+                        title="Slug can only contain letters, numbers, hyphens (-), underscores (_), equals (=), question marks (?), and ampersands (&). No spaces allowed."
+                        className={`form-control ${errors.slug ? 'is-invalid' : ''}`}
                     />
+                    {errors.slug && (
+                        <div className="invalid-feedback">
+                            {errors.slug.join(', ')}
+                        </div>
+                    )}
+                    {message && (
+                        <div className="mt-2">
+                            <p className="text-danger">{message}</p>
+                        </div>
+                    )}
                 </div>
-                <button type="submit" style={styles.button}>Submit</button>
+                <button type="submit" className="btn btn-success w-100">Submit</button>
             </form>
-            {response && (
-                <div style={styles.response}>
-                    <p>Response from server:</p>
-                    <pre>{JSON.stringify(response, null, 2)}</pre>
-                </div>
-            )}
         </div>
     );
-};
-
-const styles = {
-    container: {
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        height: '100vh',
-        backgroundColor: '#f5f5f5',
-    },
-    form: {
-        backgroundColor: 'white',
-        padding: '20px',
-        borderRadius: '8px',
-        boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
-        maxWidth: '400px',
-        width: '100%',
-        textAlign: 'center',
-    },
-    heading: {
-        marginBottom: '20px',
-    },
-    label: {
-        display: 'block',
-        marginBottom: '8px',
-    },
-    input: {
-        width: '100%',
-        padding: '10px',
-        marginBottom: '20px',
-        border: '1px solid #ccc',
-        borderRadius: '4px',
-    },
-    button: {
-        padding: '10px 15px',
-        backgroundColor: '#4CAF50',
-        color: 'white',
-        border: 'none',
-        borderRadius: '4px',
-        cursor: 'pointer',
-    },
-    response: {
-        marginTop: '20px',
-    }
 };
 
 export default UrlForm;

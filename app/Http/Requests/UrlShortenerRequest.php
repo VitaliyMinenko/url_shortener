@@ -3,37 +3,32 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Validation\Rule;
 
 class UrlShortenerRequest extends FormRequest
 {
-    /**
-     * Determine if the user is authorized to make this request.
-     */
     public function authorize(): bool
     {
         return true;
     }
 
-    /**
-     * Get the validation rules that apply to the request.
-     *
-     * @return array<string, \Illuminate\Contracts\Validation\ValidationRule|array<mixed>|string>
-     */
     public function rules(): array
     {
         return [
-            'url' => ['required', 'url'],
+            'url' => [
+                'required',
+                'regex:/^[a-zA-Z0-9-_=?&\/]+$/',
+                Rule::unique('url_shortness', 'original_url')
+            ],
         ];
     }
 
-    /**
-     * Сообщения об ошибках валидации.
-     */
     public function messages(): array
     {
         return [
-            'url.required' => 'URL обязателен для ввода.',
-            'url.url' => 'Пожалуйста, введите корректный URL.',
+            'url.required' => 'Slug is required.',
+            'url.regex' => 'Slug can only contain letters, numbers, hyphens, underscores, equals signs, question marks, ampersands, and slashes.',
+            'url.unique' => 'This slug is already in use. Please choose another one.',
         ];
     }
 }
