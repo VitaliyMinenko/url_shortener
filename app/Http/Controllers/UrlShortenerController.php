@@ -15,7 +15,7 @@ use Throwable;
 class UrlShortenerController extends Controller
 {
 
-    public function __construct(private UrlShortenerService $shortenerService)
+    public function __construct(private readonly UrlShortenerService $shortenerService)
     {
     }
 

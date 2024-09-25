@@ -43,7 +43,6 @@ const UrlForm = () => {
                         value={slug}
                         onChange={handleInputChange}
                         required
-                        pattern="^[=_?&a-zA-Z0-9/-]+$"
                         title="Slug can only contain letters, numbers, hyphens (-), underscores (_), equals (=), question marks (?), and ampersands (&). No spaces allowed."
                         className={`form-control ${errors.slug ? 'is-invalid' : ''}`}
                     />

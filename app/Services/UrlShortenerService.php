@@ -17,6 +17,7 @@ class UrlShortenerService
         try {
             $shortUrl = substr(md5($originalUrl . time()), 0, 6);
             $this->saveShortUrl($shortUrl, $originalUrl);
+
             return $shortUrl;
         } catch (Throwable $exception) {
             throw new RuntimeException('Failed to generate short url: ' . $exception->getMessage(), 0, $exception);
@@ -47,13 +48,13 @@ class UrlShortenerService
         }
     }
 
-    private function saveShortUrl(string $shortUrl, string $originalUrl): bool
+    private function saveShortUrl(string $shortUrl, string $originalUrl): void
     {
         $urlShortener = new UrlShortener([
             'original_url' => $originalUrl,
             'short_url' => $shortUrl,
         ]);
 
-        return $urlShortener->save();
+        $urlShortener->save();
     }
 }

@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
-import UrlForm from "../Components/UrlForm.jsx";
+import UrlForm from "../components/urlForm.jsx";
 
 function App() {
     return (
